@@ -2,93 +2,83 @@
 
 ## Overview
 
-This project is a beam envelope simulation of a real accelerator beamline at the **Mumbai University Accelerator Centre (MUAC)**. The simulation models the transport of charged particle beams through electrostatic and magnetic beamline elements using first-order transfer matrix optics.
+This project is a beam envelope simulation of a real accelerator beamline at the **Mumbai University Accelerator Centre (MUAC)**. The simulation models charged particle transport through electrostatic and magnetic beamline elements using **first-order transfer matrix optics**.
 
-The code tracks thousands of particles simultaneously and studies how the beam evolves as it passes through:
+The code tracks thousands of particles simultaneously and studies how the beam evolves through:
 
-- Drift spaces
-- Einzel lenses
-- Electrostatic bending sections
-- Quadrupole triplets
-- Edge focusing elements
-- Beam apertures
+- Drift Spaces
+- Einzel Lenses
+- Electrostatic Sector Analyzer (ESA)
+- Quadrupole Triplets
+- Edge Focusing Elements
+- Beam Apertures
 
-The simulation provides a realistic representation of beam transport and transmission through the accelerator beamline.
+The simulation provides information about:
 
----
-
-# Objectives
-
-The purpose of this simulation is to:
-
-- Study beam transport through the accelerator.
-- Understand beam focusing and defocusing.
-- Investigate beam losses due to apertures.
-- Optimize quadrupole strengths.
-- Analyze beam transmission.
-- Visualize beam profiles at different locations.
-- Predict beam behavior before experimental implementation.
+- Beam Envelope Evolution
+- Beam Transmission
+- Beam Losses
+- Beam Spot Diagrams
+- Effect of Optical Elements on Beam Transport
 
 ---
 
 # Physical Principle
 
-The simulation is based on the transfer matrix formalism of charged particle optics.
-
-Each particle is represented by its transverse coordinates:
+Each particle is represented in phase space as:
 
 ### Horizontal Plane
 
-\[
+$$
 X=
 \begin{bmatrix}
 x\\
 x'
 \end{bmatrix}
-\]
+$$
 
 where:
 
-- \(x\) = horizontal displacement
-- \(x'\) = horizontal divergence angle
+- $x$ = horizontal position
+- $x'$ = horizontal divergence angle
+
+---
 
 ### Vertical Plane
 
-\[
+$$
 Y=
 \begin{bmatrix}
 y\\
 y'
 \end{bmatrix}
-\]
+$$
 
 where:
 
-- \(y\) = vertical displacement
-- \(y'\) = vertical divergence angle
+- $y$ = vertical position
+- $y'$ = vertical divergence angle
 
-The propagation through every optical component is represented by:
+The propagation through any optical element is given by:
 
-\[
-X_f=M_xX_i
-\]
+$$
+X_f = M_x X_i
+$$
 
-\[
-Y_f=M_yY_i
-\]
+$$
+Y_f = M_y Y_i
+$$
 
 where:
 
-- \(M_x\) = horizontal transfer matrix
-- \(M_y\) = vertical transfer matrix
+- $M_x$ = Horizontal Transfer Matrix
+- $M_y$ = Vertical Transfer Matrix
 
 ---
 
 # Particle Generation
 
-The simulation begins by generating a beam consisting of \(N\) particles.
-
-Example:
+The simulation begins by generating a Gaussian particle distribution.
 
 ```python
 x  = np.random.normal(0, sigma_x, N)
@@ -98,7 +88,13 @@ y  = np.random.normal(0, sigma_y, N)
 yp = np.random.normal(0, sigma_yp, N)
 ```
 
-The particles follow Gaussian distributions similar to those observed experimentally.
+where:
+
+- $N$ = Number of particles
+- $\sigma_x$ = Beam Size
+- $\sigma_{x'}$ = Beam Divergence
+
+This creates a realistic beam distribution similar to experimental accelerator beams.
 
 ---
 
@@ -124,24 +120,11 @@ beam_y =
 ]
 ```
 
-Each column represents one particle.
-
-For example:
-
-```python
-beam_x[:,0]
-```
-
-represents the first particle:
-
-```python
-[x1,
- xp1]
-```
+Each column represents a single particle.
 
 ---
 
-# Transfer Matrices Used
+# Transfer Matrices
 
 The simulation uses four primary transfer matrices.
 
@@ -149,32 +132,35 @@ The simulation uses four primary transfer matrices.
 
 ## 1. Drift Matrix
 
-A drift represents free propagation of particles.
+A drift represents free propagation without any focusing.
 
-\[
+$$
 M_{drift}
 =
 \begin{bmatrix}
 1 & L\\
 0 & 1
 \end{bmatrix}
-\]
+$$
 
 where:
 
-- \(L\) = drift length
+- $L$ = Drift Length
+
+The particle coordinates transform as:
+
+$$
+x_f = x_i + Lx'_i
+$$
+
+$$
+x'_f = x'_i
+$$
 
 Effect:
 
-\[
-x_f=x_i+Lx'_i
-\]
-
-\[
-x'_f=x'_i
-\]
-
-The particle continues in a straight line.
+- No focusing
+- Beam expands due to divergence
 
 ---
 
@@ -182,32 +168,32 @@ The particle continues in a straight line.
 
 Used for:
 
-- Einzel lens
-- Focusing quadrupole plane
+- Einzel Lens
+- Focusing Plane of Quadrupoles
 
-\[
+$$
 M_F
 =
 \begin{bmatrix}
 \cos(\sqrt{k}L)
 &
-\frac{\sin(\sqrt{k}L)}{\sqrt{k}}
+\dfrac{\sin(\sqrt{k}L)}{\sqrt{k}}
 \\
 -\sqrt{k}\sin(\sqrt{k}L)
 &
 \cos(\sqrt{k}L)
 \end{bmatrix}
-\]
+$$
 
 where:
 
-- \(k\) = focusing strength
+- $k$ = Focusing Strength
 
 Effect:
 
-- Converges particle trajectories.
-- Produces beam waists.
-- Reduces beam size.
+- Converges particle trajectories
+- Produces beam waist
+- Reduces beam size
 
 ---
 
@@ -215,34 +201,34 @@ Effect:
 
 Used for:
 
-- Defocusing quadrupole plane
+- Defocusing Plane of Quadrupoles
 
-\[
+$$
 M_D
 =
 \begin{bmatrix}
 \cosh(\sqrt{k}L)
 &
-\frac{\sinh(\sqrt{k}L)}{\sqrt{k}}
+\dfrac{\sinh(\sqrt{k}L)}{\sqrt{k}}
 \\
 \sqrt{k}\sinh(\sqrt{k}L)
 &
 \cosh(\sqrt{k}L)
 \end{bmatrix}
-\]
+$$
 
 Effect:
 
-- Diverges particle trajectories.
-- Increases beam size.
+- Diverges particle trajectories
+- Increases beam size
 
 ---
 
 ## 4. Bending Matrix
 
-Used for electrostatic bending sections.
+Used to model the Electrostatic Sector Analyzer (ESA).
 
-\[
+$$
 M_{bend}
 =
 \begin{bmatrix}
@@ -254,17 +240,18 @@ R\sin\left(\frac{L}{R}\right)
 &
 \cos\left(\frac{L}{R}\right)
 \end{bmatrix}
-\]
+$$
 
 where:
 
-- \(R\) = bending radius
+- $R$ = Bend Radius
+- $L$ = Arc Length
 
 Effect:
 
-- Changes beam trajectory.
-- Produces weak focusing.
-- Bends the beam through the analyzer section.
+- Changes beam direction
+- Produces trajectory curvature
+- Provides weak focusing in bend plane
 
 ---
 
@@ -272,46 +259,74 @@ Effect:
 
 ## Drift
 
-A region with no focusing fields.
+Implemented using:
+
+$$
+M_x = M_y = M_{drift}
+$$
+
+Code:
 
 ```python
-Mx = drift(ds)
-My = drift(ds)
+M = drift(ds)
 ```
-
-Both planes behave identically.
 
 ---
 
 ## Einzel Lens
 
-Electrostatic focusing element.
+Implemented using:
+
+$$
+M_x = M_y = M_F
+$$
+
+Code:
 
 ```python
-Mx = focus(k, ds)
-My = focus(k, ds)
+M = focus(k, ds)
 ```
 
-Focuses in both planes simultaneously.
+The Einzel Lens focuses equally in both planes.
 
 ---
 
-## ESA Bending Section
+## ESA Bend
 
-Electrostatic sector analyzer.
+Implemented using:
+
+$$
+M_x = M_{bend}
+$$
+
+$$
+M_y = M_{drift}
+$$
+
+Code:
 
 ```python
 Mx = bend(ds, R)
 My = drift(ds)
 ```
 
-The horizontal plane bends while the vertical plane drifts.
+The beam bends in the horizontal plane while drifting vertically.
 
 ---
 
 ## QF Quadrupole
 
-Focusing quadrupole.
+Focusing Quadrupole.
+
+$$
+M_x = M_F
+$$
+
+$$
+M_y = M_D
+$$
+
+Code:
 
 ```python
 Mx = focus(k, ds)
@@ -327,7 +342,17 @@ Effect:
 
 ## QD Quadrupole
 
-Defocusing quadrupole.
+Defocusing Quadrupole.
+
+$$
+M_x = M_D
+$$
+
+$$
+M_y = M_F
+$$
+
+Code:
 
 ```python
 Mx = defocus(k, ds)
@@ -341,22 +366,9 @@ Effect:
 
 ---
 
-## Edge Focusing
+# Particle Tracking
 
-Thin lens approximation for bending magnet edge effects.
-
-```python
-Mx = thin_edge_x(f)
-My = thin_edge_y(f)
-```
-
-Used to model fringe field focusing.
-
----
-
-# Particle Tracking Algorithm
-
-Each element is divided into small slices.
+Each beamline element is divided into small slices.
 
 ```python
 nsteps = int(L/ds)
@@ -364,41 +376,48 @@ nsteps = int(L/ds)
 
 where:
 
-- \(L\) = component length
-- \(ds\) = propagation step size
+- $L$ = Element Length
+- $ds$ = Propagation Step Size
 
 Typical:
 
 ```python
-ds = 0.001 m
+ds = 0.001
 ```
 
-For every slice:
+which corresponds to:
+
+$$
+ds = 1 \ mm
+$$
+
+For every step:
 
 ```python
 beam_x = Mx @ beam_x
 beam_y = My @ beam_y
 ```
 
-which propagates all particles simultaneously.
+All particles are propagated simultaneously using matrix multiplication.
 
 ---
 
 # Aperture Scraping
 
-Real beamlines contain apertures and beam pipes.
+The simulation includes physical apertures.
 
-To simulate losses:
+The radial distance of each particle from the beam axis is:
 
-\[
-r=\sqrt{x^2+y^2}
-\]
+$$
+r=
+\sqrt{x^2+y^2}
+$$
 
-Particles survive only if:
+A particle survives if:
 
-\[
-r<r_{aperture}
-\]
+$$
+r < r_{aperture}
+$$
 
 Code:
 
@@ -415,47 +434,52 @@ Particles outside the aperture are removed from the simulation.
 
 # Beam Envelope Calculation
 
-The beam envelope is calculated using the 95th percentile:
+The beam envelope is calculated using the 95th percentile.
+
+$$
+x_{95}
+=
+P_{95}
+\left(
+|x|
+\right)
+$$
+
+$$
+y_{95}
+=
+P_{95}
+\left(
+|y|
+\right)
+$$
+
+Code:
 
 ```python
-np.percentile(np.abs(beam_x[0]),95)
+np.percentile(
+    np.abs(beam_x[0]),
+    95
+)
 ```
 
 Meaning:
 
 > 95% of all surviving particles lie inside the plotted envelope.
 
-Advantages:
-
-- Reduces sensitivity to outliers.
-- Provides a realistic beam boundary.
-- Produces smoother envelope curves.
-
-The simulation stores:
-
-```python
-env
-env_y
-```
-
-which represent:
-
-- Horizontal envelope
-- Vertical envelope
-
-as functions of beamline position.
+This removes sensitivity to a few extreme particles while preserving realistic beam behavior.
 
 ---
 
 # Beam Transmission
 
-Transmission is defined as:
+Beam Transmission is defined as:
 
-\[
+$$
 T=
 \frac{N_{surviving}}
      {N_{initial}}
-\]
+$$
 
 Code:
 
@@ -467,20 +491,18 @@ transmission.append(
 
 Examples:
 
-```text
-1.0  → 100%
-0.8  → 80%
-0.5  → 50%
-0.0  → 0%
-```
-
-This indicates how many particles survive through the beamline.
+| Transmission | Meaning |
+|-------------|----------|
+| 1.0 | 100% survive |
+| 0.8 | 80% survive |
+| 0.5 | 50% survive |
+| 0.0 | Complete beam loss |
 
 ---
 
 # Beam Spot Diagrams
 
-Beam spot diagrams are generated using:
+The beam spot diagram is generated using:
 
 ```python
 plt.plot(
@@ -491,76 +513,58 @@ plt.plot(
 )
 ```
 
-These plots show the transverse distribution of particles.
+These plots show the transverse beam profile:
+
+$$
+x \ vs \ y
+$$
+
+at selected locations in the beamline.
 
 Applications:
 
-- Beam diagnostics
-- Aperture studies
-- Beam quality analysis
-- Matching studies
-
----
-
-# Beam Profile Storage
-
-The simulation can store beam profiles after every beamline component.
-
-Example:
-
-```python
-beam_profiles.append(
-(
-    etype,
-    beam_x[0].copy(),
-    beam_y[0].copy()
-)
-)
-```
-
-This enables visualization of beam evolution after:
-
-- Drift sections
-- Einzel lenses
-- Bending sections
-- QF quadrupoles
-- QD quadrupoles
-- Edge lenses
+- Beam Diagnostics
+- Aperture Studies
+- Beam Matching
+- Beam Quality Analysis
 
 ---
 
 # Simulation Outputs
 
-The code generates:
+The simulation generates:
 
-## 1. Beam Envelope
+## Beam Envelope
 
-Plots:
+- Horizontal Envelope
+- Vertical Envelope
 
-- Horizontal envelope
-- Vertical envelope
-
-vs beamline position.
+as a function of beamline position.
 
 ---
 
-## 2. Beam Transmission
+## Beam Transmission
 
 Plots:
 
-- Transmission
-- Particle survival fraction
+$$
+T(s)
+$$
 
-vs beamline position.
+which indicates how many particles survive along the beamline.
 
 ---
 
-## 3. Beam Spot Diagrams
+## Beam Spot Diagrams
 
-Plots:
+Particle distributions after:
 
-- x-y particle distributions
-- Beam profile after each component
+- Drift Sections
+- Einzel Lenses
+- ESA
+- QF Quadrupoles
+- QD Quadrupoles
+- Edge Focusing Elements
 
 ---
 
@@ -568,22 +572,27 @@ Plots:
 
 This simulation can be used for:
 
-- Accelerator optics design
-- Beam transport optimization
-- Aperture optimization
-- Quadrupole tuning
-- Einzel lens optimization
-- Transmission studies
-- Beam matching studies
-- ESA beam transport analysis
-- MUAC beamline design and diagnostics
+- Accelerator Optics Design
+- Beam Transport Studies
+- Aperture Optimization
+- Einzel Lens Optimization
+- Quadrupole Tuning
+- Transmission Studies
+- Beam Matching
+- ESA Beamline Analysis
+- MUAC Beamline Development
 
 ---
 
 # Author
 
-Developed for beam transport and optics studies at:
+Developed for:
 
 **Mumbai University Accelerator Centre (MUAC)**
 
-Implemented in **Python** using **transfer matrix beam dynamics** and **Monte Carlo particle tracking** techniques.
+Implemented in **Python** using:
+
+- Transfer Matrix Beam Dynamics
+- Monte Carlo Particle Tracking
+- NumPy
+- Matplotlib
