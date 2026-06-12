@@ -21,8 +21,6 @@ The simulation tracks thousands of particles and computes:
 - Vertical beam envelope
 - Beam transmission
 - Beam divergence
-- Beam loss
-- Maximum surviving particle amplitudes
 
 ---
 
@@ -128,17 +126,10 @@ Calculates the percentage of particles surviving along the beamline.
 
 Determines particle losses due to aperture restrictions.
 
-### Divergence
 
-Computes:
+### Beam Behaviour
 
-- Horizontal divergence
-- Vertical divergence
-
-### Maximum Surviving Particle
-
-Tracks the largest particle amplitude that survives aperture scraping.
-
+Shows how the beam behaves before and after entering the new element.
 ---
 
 ## 📈 Generated Plots
@@ -147,11 +138,7 @@ The code automatically generates:
 
 - Horizontal & Vertical Beam Envelopes
 - Beam Transmission
-- Beam Loss Along Beamline
-- Cumulative Beam Loss
-- Beam Divergence
-- Maximum Surviving Particle Position
-- Final Beam Spot Distribution
+- Beam Behaviour
 
 ---
 
